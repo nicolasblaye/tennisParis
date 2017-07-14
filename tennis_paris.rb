@@ -22,7 +22,7 @@ class TennisSession
 	def connect(login, password)
 		Unirest.post @auth_address, 
                         headers:{ "Accept" => "text/html", "Cookie" => @cookie }, 
-                        parameters:{ :login => "06039313", :password => "8288"}
+                        parameters:{ :login => "xxx", :password => "xxx"}
 	end
 
 	def search_query(query_parameters)
