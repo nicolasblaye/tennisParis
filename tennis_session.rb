@@ -9,24 +9,18 @@ class TennisSession
   def initialize()
     @logger = Logger.new(STDOUT)
     @index_address = 'https://teleservices.paris.fr/srtm/jsp/web/index.jsp'
-    @cookie = NIL
-    @research_cookie = NIL
     @auth_address = 'https://teleservices.paris.fr/srtm/authentificationConnexion.action'
     @init_query_address = 'https://teleservices.paris.fr/srtm/reservationCreneauInit.action'
     @query_address = 'https://teleservices.paris.fr/srtm/reservationCreneauListe.action'
+
+    @cookie = NIL
+    @research_cookie = NIL
+
     @password = NIL
     @login = NIL
 
     get_auth_cookie
     get_credentials
-    # @base_headers = {
-    #     'Connection' => keep-alive,
-    #     'Origin' => 'https://teleservices.paris.fr',
-    #     'Upgrade-Insecure-Requests' => 1,
-    #     'Content-Type' => 'application/x-www-form-urlencoded',
-    #     'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    #     'Referer' => 'https://teleservices.paris.fr/srtm/reservationCreneauInit.action'
-    # }
   end
 
   def get_auth_cookie()
@@ -62,5 +56,13 @@ class TennisSession
     Unirest.post @query_address,
                  headers: headers,
                  parameters: query_parameters
+  end
+
+  def self.get_search_page(link)
+    headers = {
+        'Accept' => 'text/html',
+        'Cookie' => @cookie
+    }
+    Unirest.get link, headers: headers
   end
 end

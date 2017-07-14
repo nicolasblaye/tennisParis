@@ -2,13 +2,7 @@
 require 'unirest'
 require 'optparse'
 require_relative 'tennis_session'
-
-
-# get or ask password
-def get_password()
-  # open file
-  # if file not prompt for pwd
-end
+require_relative 'tennis_parser'
 
 # post request to get reservation
 def prepare_queries(place, date, hour)
@@ -30,30 +24,40 @@ def prepare_queries(place, date, hour)
 end
 
 # main to parse argument
-# @todo look for argument parser ruby
 def main()
-  options = {}
-  OptionParser.new do |opt|
-    opt.on('-p p1,p2', 'Place', 'A place, favorites, or a list of places.
-					In the future, it could be a distrinct') {|o| options[:places] = o}
-    opt.on('-d d1,d2', 'Date', 'A list of dates') {|o| options[:dates] = o}
-    opt.on('-t t1,t2', 'Hour', 'A list of hours') {|o| options[:hours] = o}
-  end.parse!
-
-  #queries = prepare_queries(options[:places], options[:dates], options[:hour])
+  # options = {}
+  # OptionParser.new do |opt|
+  #   opt.on('-p p1,p2', 'Place', 'A place, favorites, or a list of places.
+  # 			In the future, it could be a distrinct') {|o| options[:places] = o}
+  #   opt.on('-d d1,d2', 'Date', 'A list of dates') {|o| options[:dates] = o}
+  #   opt.on('-t t1,t2', 'Hour', 'A list of hours') {|o| options[:hours] = o}
+  # end.parse!
+  #
+  # #queries = prepare_queries(options[:places], options[:dates], options[:hour])
 
   tennis_paris = TennisSession.new
 
   tennis_paris.connect
 
-  params = {:provenanceCriteres => true, :actionInterne => "recherche", :recherchePreferee => "on",
-            :dateDispo => "08/07/2017", :libellePlageHoraire => "", :nomCourt => "", :champ => "", :tennisArrond => "",
-            :arrondissement => "", :arrondissement2 => "", :arrondissement3 => "", :heureDispo => "", :plageHoraireDispo => "",
-            :revetement => "", :court => ""}
+  params = {
+      provenanceCriteres: true, actionInterne: 'recherche',
+      recherchePreferee: 'on', dateDispo: '', libellePlageHoraire: '',
+      nomCourt: '', champ: '', tennisArrond: '', arrondissement: '',
+      arrondissement2: '', arrondissement3: '', heureDispo: '',
+      plageHoraireDispo: '18@21', revetement: '', court: ''
+  }
 
   response = tennis_paris.search_query(params)
-  puts response.code
-  puts response.body
+  page1_html = response.body.encode('UTF-8', 'ISO-8859-1')
+
+  links = TennisParser.get_links(page1_html)
+  slots = TennisParser.parse_page(page1_html)
+
+  links.each do |link|
+    html = TennisSession.get_search_page(link).body.encode('UTF-8', 'ISO-8859-1')
+    puts html
+    slots.push(*TennisParser.parse_page(html))
+  end
 end
 
 
