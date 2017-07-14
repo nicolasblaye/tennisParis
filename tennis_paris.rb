@@ -1,7 +1,14 @@
 #require("nokogiri")
-
+require 'unirest'
 require 'optparse'
 require_relative 'tennis_session'
+
+
+# get or ask password
+def get_password()
+  # open file
+  # if file not prompt for pwd
+end
 
 # post request to get reservation
 def prepare_queries(place, date, hour)
@@ -37,14 +44,17 @@ def main()
 
   tennis_paris = TennisSession.new
 
+  tennis_paris.connect
+
   params = {:provenanceCriteres => true, :actionInterne => "recherche", :recherchePreferee => "on",
             :dateDispo => "08/07/2017", :libellePlageHoraire => "", :nomCourt => "", :champ => "", :tennisArrond => "",
             :arrondissement => "", :arrondissement2 => "", :arrondissement3 => "", :heureDispo => "", :plageHoraireDispo => "",
             :revetement => "", :court => ""}
 
   response = tennis_paris.search_query(params)
+  puts response.code
   puts response.body
 end
 
 
-main()
+main
