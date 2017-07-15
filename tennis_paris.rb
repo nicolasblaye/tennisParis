@@ -53,11 +53,14 @@ def main()
   links = TennisParser.get_links(page1_html)
   slots = TennisParser.parse_page(page1_html)
 
+  puts links
+
   links.each do |link|
-    html = TennisSession.get_search_page(link).body.encode('UTF-8', 'ISO-8859-1')
-    puts html
+    html = tennis_paris.get_search_page(link).body.encode('UTF-8', 'ISO-8859-1')
     slots.push(*TennisParser.parse_page(html))
   end
+
+  puts slots.size
 end
 
 

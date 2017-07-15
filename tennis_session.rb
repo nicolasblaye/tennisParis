@@ -14,7 +14,6 @@ class TennisSession
     @query_address = 'https://teleservices.paris.fr/srtm/reservationCreneauListe.action'
 
     @cookie = NIL
-    @research_cookie = NIL
 
     @password = NIL
     @login = NIL
@@ -58,7 +57,7 @@ class TennisSession
                  parameters: query_parameters
   end
 
-  def self.get_search_page(link)
+  def get_search_page(link)
     headers = {
         'Accept' => 'text/html',
         'Cookie' => @cookie
