@@ -32,6 +32,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   highline
+  minitest
   nokogiri
   unirest
 
