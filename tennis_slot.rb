@@ -6,4 +6,17 @@ class TennisSlot
     @court = court
     @reservation_keys = reservation_keys
   end
+
+  attr_reader :tennis_name
+  attr_reader :date
+  attr_reader :hour
+  attr_reader :court
+  attr_reader :reservation_keys
+
+  def to_s
+    "tennis_name #{@tennis_name}\n" \
+        "hour #{hour}\n" \
+        "date #{@date}\n" \
+        "court #{@date}\n"
+  end
 end
