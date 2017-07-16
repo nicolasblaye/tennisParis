@@ -48,16 +48,14 @@ def main()
   }
 
   response = tennis_paris.search_query(params)
-  page1_html = response.body.encode('UTF-8', 'ISO-8859-1')
+  current_html = response.body.encode('UTF-8', 'ISO-8859-1')
 
-  links = TennisParser.get_links(page1_html)
-  slots = TennisParser.parse_page(page1_html)
+  slots = TennisParser.parse_page(current_html)
 
-  puts links
-
-  links.each do |link|
-    html = tennis_paris.get_search_page(link).body.encode('UTF-8', 'ISO-8859-1')
-    slots.push(*TennisParser.parse_page(html))
+  while TennisParser.has_next_link(current_html)
+    next_link = TennisParser.get_next_link(current_html)
+    current_html = tennis_paris.get_search_page(next_link).body.encode('UTF-8', 'ISO-8859-1')
+    slots.push(*TennisParser.parse_page(current_html))
   end
 
   puts slots.size

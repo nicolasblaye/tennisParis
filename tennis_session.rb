@@ -23,7 +23,7 @@ class TennisSession
   end
 
   def get_auth_cookie()
-    @logger.info("get Auth Cookie")
+    @logger.info('get Auth Cookie')
     response = Unirest.get(@index_address)
     @cookie = response.headers[:set_cookie][0]
   end
@@ -62,6 +62,10 @@ class TennisSession
         'Accept' => 'text/html',
         'Cookie' => @cookie
     }
+    page = link.split('&')
+               .select { |param| param.include?('d-41734-p') }[0]
+               .split('=')[-1].to_i
+    @logger.info("Getting page #{page} ")
     Unirest.get link, headers: headers
   end
 end
