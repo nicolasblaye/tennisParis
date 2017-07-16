@@ -25,6 +25,7 @@ end
 
 # main to parse argument
 def main()
+  logger = Logger.new(STDOUT)
   # options = {}
   # OptionParser.new do |opt|
   #   opt.on('-p p1,p2', 'Place', 'A place, favorites, or a list of places.
@@ -57,8 +58,7 @@ def main()
     current_html = tennis_paris.get_search_page(next_link).body.encode('UTF-8', 'ISO-8859-1')
     slots.push(*TennisParser.parse_page(current_html))
   end
-
-  puts slots.size
+  logger.info('#{slots.size} tennis courts available')
 end
 
 

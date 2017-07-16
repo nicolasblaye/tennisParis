@@ -51,7 +51,7 @@ class TennisSession
         'Cookie' => @cookie
     }
     Unirest.get @init_query_address, headers: headers
-    @logger.info('Requesting the tennis courts')
+    @logger.info('Requesting the tennis courts page 1')
     Unirest.post @query_address,
                  headers: headers,
                  parameters: query_parameters
