@@ -17,6 +17,11 @@ class TennisSlot
     "tennis_name #{@tennis_name}\n" \
         "hour #{hour}\n" \
         "date #{@date}\n" \
-        "court #{@date}\n"
+        "court #{@date}\n" \
+        "key #{@reservation_keys} \n"
+  end
+
+  def reservation_key
+    @reservation_keys
   end
 end

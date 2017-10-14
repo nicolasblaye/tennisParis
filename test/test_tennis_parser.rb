@@ -31,7 +31,7 @@ class TestTennisParser < Minitest::Test
   end
 
   def test_has_next_link
-    assert(TennisParser.has_next_link(html))
+    assert(TennisParser.next_link?(html))
   end
 
   def test_get_next_link

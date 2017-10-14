@@ -6,38 +6,36 @@ require 'logger'
 
 ## A class to store the session token and some url
 class TennisSession
-  def initialize()
+  def initialize
     @logger = Logger.new(STDOUT)
     @index_address = 'https://teleservices.paris.fr/srtm/jsp/web/index.jsp'
     @auth_address = 'https://teleservices.paris.fr/srtm/authentificationConnexion.action'
     @init_query_address = 'https://teleservices.paris.fr/srtm/reservationCreneauInit.action'
     @query_address = 'https://teleservices.paris.fr/srtm/reservationCreneauListe.action'
+    @reservation_address = 'https://teleservices.paris.fr/srtm/reservationCreneauReserver.action'
+    @reservation_validation = 'https://teleservices.paris.fr/srtm/ReservationCreneauValidationForm.action'
 
-    @cookie = NIL
-
-    @password = NIL
-    @login = NIL
-
-    get_auth_cookie
-    get_credentials
+    @cookie = auth_cookie
   end
 
-  def get_auth_cookie()
+  def auth_cookie
     @logger.info('get Auth Cookie')
     response = Unirest.get(@index_address)
     @cookie = response.headers[:set_cookie][0]
   end
 
-  def get_credentials()
-    @login = ask 'login'
+  def credentials
+    login = ask 'login'
     puts 'password'
-    @password = STDIN.noecho(&:gets).chomp
+    password = STDIN.noecho(&:gets).chomp
+    [login, password]
   end
 
-  def connect()
+  def connect
     @logger.info("Connecting to user #{@login} ...")
     headers = { 'Accept' => 'text/html', 'Cookie' => @cookie }
-    parameters = { login: @login, password: @password }
+    login, password = credentials
+    parameters = { login: login, password: password }
     Unirest.post @auth_address,
                  headers: headers,
                  parameters: parameters
@@ -47,8 +45,8 @@ class TennisSession
     @logger.info('Searching for a tennis court...')
     @logger.info('Initializing the search...')
     headers = {
-        'Accept' => 'text/html',
-        'Cookie' => @cookie
+      'Accept' => 'text/html',
+      'Cookie' => @cookie
     }
     Unirest.get @init_query_address, headers: headers
     @logger.info('Requesting the tennis courts page 1')
@@ -59,13 +57,43 @@ class TennisSession
 
   def get_search_page(link)
     headers = {
-        'Accept' => 'text/html',
-        'Cookie' => @cookie
+      'Accept' => 'text/html',
+      'Cookie' => @cookie
     }
     page = link.split('&')
                .select { |param| param.include?('d-41734-p') }[0]
                .split('=')[-1].to_i
     @logger.info("Getting page #{page} ")
     Unirest.get link, headers: headers
+  end
+
+  def reservation_page(key)
+    headers = {
+      'Accept' => 'text/html',
+      'Cookie' => @cookie
+    }
+    Unirest.post @reservation_address,
+                 headers: headers,
+                 parameters: { cle: key }
+  end
+
+  def captcha_getter
+    headers = {
+      'Accept' => 'image/jpeg',
+      'Cookie' => @cookie
+    }
+    @logger.info('Getting a new captcha')
+    captcha_url = 'https://teleservices.paris.fr/srtm/ImageCaptcha'
+    Unirest.get captcha_url, headers: headers
+  end
+  
+  def validate_reservation(captcha)
+    headers = {
+      Accept: 'text/html',
+      Cookie: @cookie,
+      jcaptcha_reponse: captcha,
+      valider: 'ENREGISTRER'
+    }
+    Unirest.post @reservation_validation, headers: headers
   end
 end
